@@ -11,39 +11,13 @@ module Mongoid #:nodoc:
   # can be chained in order to create a readable criterion to be executed
   # against the database.
   class Criteria
+    include Contextual
     include Enumerable
     include Origin::Queryable
     include Criterion::Inspection
     include Criterion::Scoping
 
     attr_accessor :embedded, :klass
-
-    delegate \
-      :add_to_set,
-      :aggregate,
-      :avg,
-      :blank?,
-      :count,
-      :size,
-      :length,
-      :delete,
-      :delete_all,
-      :destroy,
-      :destroy_all,
-      :distinct,
-      :empty?,
-      :execute,
-      :first,
-      :group,
-      :last,
-      :max,
-      :min,
-      :one,
-      :pull,
-      :shift,
-      :sum,
-      :update,
-      :update_all, to: :context
 
     # Returns true if the supplied +Enumerable+ or +Criteria+ is equal to the results
     # of this +Criteria+ or the criteria itself.
@@ -262,7 +236,7 @@ module Mongoid #:nodoc:
     #
     # @since 2.3.0
     def extract_id
-      selector["_id"]
+      selector.extract_id
     end
 
     # Adds a criterion to the +Criteria+ that specifies additional options
@@ -553,20 +527,6 @@ module Mongoid #:nodoc:
           end
         end
       )
-    end
-
-    # Get the raw driver collection from the criteria.
-    #
-    # @api private
-    #
-    # @example Get the raw driver collection.
-    #   criteria.driver
-    #
-    # @return [ Mongo::Collection ] The driver collection.
-    #
-    # @since 2.2.0
-    def driver
-      collection.driver
     end
 
     # Find documents based on the provided ids, and return an array of the
