@@ -65,18 +65,6 @@ module Mongoid #:nodoc:
       create_document(:new, attrs)
     end
 
-    # Get the collection associated with the criteria.
-    #
-    # @example Get the collection.
-    #   criteria.collection
-    #
-    # @return [ Collection ] The collection.
-    #
-    # @since 2.2.0
-    def collection
-      klass.collection
-    end
-
     # Tells the criteria that the cursor that gets returned needs to be
     # cached. This is so multiple iterations don't hit the database multiple
     # times, however this is not advisable when working with large data sets
@@ -98,19 +86,6 @@ module Mongoid #:nodoc:
     # @return [ true, false ] If the criteria is flagged as cached.
     def cached?
       options[:cache] == true
-    end
-
-    # Return or create the context in which this criteria should be executed.
-    #
-    # This will return an Enumerable context if the class is embedded,
-    # otherwise it will return a Mongo context for root classes.
-    #
-    # @example Get the appropriate context.
-    #   criteria.context
-    #
-    # @return [ Mongo, Enumerable ] The appropriate context.
-    def context
-      @context ||= Contexts.context_for(self, embedded)
     end
 
     # Create a document in the database given the selector and return it.
@@ -173,19 +148,6 @@ module Mongoid #:nodoc:
       @documents = docs
     end
 
-    # Iterate over each +Document+ in the results. This can take an optional
-    # block to pass to each argument in the results.
-    #
-    # @example Iterate over the criteria results.
-    #   criteria.each { |doc| p doc }
-    #
-    # @return [ Criteria ] The criteria itself.
-    #
-    # @since 1.0.0
-    def each(&block)
-      tap { context.iterate(&block) }
-    end
-
     # Execute the criteria or raise an error if no documents found.
     #
     # @example Execute or raise
@@ -212,18 +174,6 @@ module Mongoid #:nodoc:
     # @since 1.0.0
     def exists?
       context.count > 0
-    end
-
-    # Run an explain on the criteria.
-    #
-    # @example Explain the criteria.
-    #   Band.where(name: "Depeche Mode").explain
-    #
-    # @return [ Hash ] The explain result.
-    #
-    # @since 3.0.0
-    def explain
-      driver.find(selector, options).explain
     end
 
     # Extract a single id from the provided criteria. Could be in an $and
